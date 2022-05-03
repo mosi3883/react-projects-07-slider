@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { FiChevronRight, FiChevronLeft } from 'react-icons/fi';
 import { FaQuoteRight } from 'react-icons/fa';
-import data from './data';
+import people from './data';
+const lastIndex = people.length - 1;
 function App() {
-  const [people, setPeople] = useState(data);
+  // const [people, setPeople] = useState(data);
   const [sliderIndex, setSliderIndex] = useState(0);
+
+  const prevSlide = () => {
+    setSliderIndex((prevIndex) => {
+      let newIndex = prevIndex - 1;
+      if (newIndex < 0) {
+        newIndex = lastIndex;
+      }
+      return newIndex;
+    });
+  };
+  const nextSlide = () => {
+    setSliderIndex((prevIndex) => {
+      let newIndex = prevIndex + 1;
+      if (newIndex > lastIndex) {
+        newIndex = 0;
+      }
+      return newIndex;
+    });
+  };
+
   useEffect(() => {
-    const lastIndex = people.length - 1;
-    if (sliderIndex > lastIndex) {
-      setSliderIndex(0);
-    }
-    if (sliderIndex < 0) {
-      setSliderIndex(lastIndex);
-    }
-  }, [sliderIndex, people.length]);
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSliderIndex((prevIndex) => prevIndex + 1);
-    }, 3000);
+    const timer = setInterval(nextSlide, 3000);
     return () => {
       clearInterval(timer);
     };
@@ -53,10 +63,10 @@ function App() {
             </article>
           );
         })}
-        <button className='prev' onClick={() => setSliderIndex((prevIndex) => prevIndex - 1)}>
+        <button className='prev' onClick={prevSlide}>
           <FiChevronLeft />
         </button>
-        <button className='next' onClick={() => setSliderIndex((prevIndex) => prevIndex + 1)}>
+        <button className='next' onClick={nextSlide}>
           <FiChevronRight />
         </button>
       </div>
