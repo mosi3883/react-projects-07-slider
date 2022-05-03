@@ -5,6 +5,23 @@ import data from './data';
 function App() {
   const [people, setPeople] = useState(data);
   const [sliderIndex, setSliderIndex] = useState(0);
+  useEffect(() => {
+    const lastIndex = people.length - 1;
+    if (sliderIndex > lastIndex) {
+      setSliderIndex(0);
+    }
+    if (sliderIndex < 0) {
+      setSliderIndex(lastIndex);
+    }
+  }, [sliderIndex, people.length]);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSliderIndex((prevIndex) => prevIndex + 1);
+    }, 3000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [sliderIndex]);
   return (
     <section className='section'>
       <div className='title'>
@@ -16,9 +33,18 @@ function App() {
         {people.map((person, index) => {
           const { id, image, name, title, quote } = person;
           // more stuff
-
+          let classes = 'nextSlide';
+          if (index === sliderIndex) {
+            classes = 'activeSlide';
+          }
+          if (
+            sliderIndex - 1 === index ||
+            (sliderIndex === 0 && index === people.length - 1)
+          ) {
+            classes = 'lastSlide';
+          }
           return (
-            <article key={id}>
+            <article key={id} className={classes}>
               <img src={image} alt={name} className='person-img' />
               <h4>{name}</h4>
               <p className='title'>{title}</p>
@@ -27,10 +53,10 @@ function App() {
             </article>
           );
         })}
-        <button className='prev'>
+        <button className='prev' onClick={() => setSliderIndex((prevIndex) => prevIndex - 1)}>
           <FiChevronLeft />
         </button>
-        <button className='next'>
+        <button className='next' onClick={() => setSliderIndex((prevIndex) => prevIndex + 1)}>
           <FiChevronRight />
         </button>
       </div>
